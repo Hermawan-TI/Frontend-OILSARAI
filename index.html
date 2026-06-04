@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analisis Perbandingan Model Segmentasi Deep Learning — Deteksi Tumpahan Minyak SAR</title>
+  <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.upload-box {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.result {
+    margin-top: 30px;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
+}
+
+.card img {
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.info {
+    margin-top: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    color: blue;
+}
+</style>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="scan-line"></div>
+      <div class="loader-logo">
+        <span class="loader-icon"><i class="fas fa-satellite"></i></span>
+        <p class="loader-text">INITIALIZING AI SYSTEM</p>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+        <p class="loader-status" id="loaderStatus">Loading neural network...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Particle Canvas -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <i class="fas fa-water"></i>
+        <span>OilSAR<span class="accent">AI</span></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#about">Penelitian</a></li>
+        <li><a href="#architecture">Arsitektur</a></li>
+        <li><a href="#detection">Deteksi</a></li>
+        <li><a href="#dataset">Dataset</a></li>
+        <li><a href="#gallery">Galeri</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#hero">Home</a>
+      <a href="#about">Penelitian</a>
+      <a href="#architecture">Arsitektur</a>
+      <a href="#training">Training</a>
+      <a href="#detection">Deteksi</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#gallery">Galeri</a>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section id="hero">
+    <div class="hero-bg">
+      <div class="sar-grid"></div>
+      <div class="scan-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badges">
+          <span class="badge"><i class="fas fa-brain"></i> Deep Learning</span>
+          <span class="badge"><i class="fab fa-google"></i> Google Colab Training</span>
+          <span class="badge"><i class="fas fa-network-wired"></i> ResNet34</span>
+          <span class="badge"><i class="fas fa-layer-group"></i> U-Net</span>
+          <span class="badge"><i class="fas fa-satellite-dish"></i> SAR Image Processing</span>
+        </div>
+        <h1 class="hero-title">Analisis Perbandingan Model Segmentasi <span class="glow-text">Deep Learning</span></h1>
+        <p class="hero-subtitle">untuk Deteksi Tumpahan Minyak pada <span class="accent-text">Citra SAR Laut</span></p>
+        <p class="hero-desc">Studi komparatif tiga model segmentasi deep learning — U-Net, U-Net++, dan DeepLabV3+ — dengan backbone ResNet34 untuk mendeteksi area tumpahan minyak pada citra SAR laut.</p>
+        <div class="hero-buttons">
+          <button class="btn-primary" onclick="document.getElementById('detection').scrollIntoView({behavior:'smooth'})">
+            <i class="fas fa-search"></i> Mulai Deteksi
+          </button>
+          <button class="btn-secondary" onclick="document.getElementById('architecture').scrollIntoView({behavior:'smooth'})">
+            <i class="fas fa-project-diagram"></i> Lihat Arsitektur Model
+          </button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="sar-display">
+          <div class="sar-header">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="sar-title">SAR SEGMENTATION PREVIEW</span>
+          </div>
+          <div class="sar-image-area">
+            <div class="sar-original">
+              <div class="sar-label">INPUT SAR</div>
+              <div class="sar-mock-img grayscale-mock"></div>
+            </div>
+            <div class="sar-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="sar-result">
+              <div class="sar-label">SEGMENTATION</div>
+              <div class="sar-mock-img seg-mock"></div>
+            </div>
+          </div>
+          <div class="sar-stats">
+            <div class="stat-item"><span class="stat-val cyan">U-Net</span><span class="stat-lbl">IoU 83.1%</span></div>
+            <div class="stat-item"><span class="stat-val orange">U-Net++</span><span class="stat-lbl">IoU 85.6%</span></div>
+            <div class="stat-item"><span class="stat-val green">DeepLab</span><span class="stat-lbl">IoU 87.2%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator"><div class="scroll-dot"></div></div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">TENTANG PENELITIAN</span>
+        <h2>Sistem Deteksi Tumpahan Minyak <span class="glow-text">Berbasis AI</span></h2>
+        <p>Penelitian ini membandingkan tiga model segmentasi deep learning dengan backbone ResNet34 untuk mendeteksi area tumpahan minyak pada citra SAR secara otomatis.</p>
+      </div>
+      <div class="about-cards">
+        <div class="about-card" data-aos="fade-up">
+          <div class="card-icon"><i class="fas fa-oil-can"></i></div>
+          <h3>Segmentasi Tumpahan Minyak</h3>
+          <p>Deteksi piksel-level area tumpahan minyak pada citra SAR menggunakan tiga arsitektur deep learning yang dibandingkan.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up" data-delay="100">
+          <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+          <h3>Perbandingan Model</h3>
+          <p>Membandingkan performa U-Net, U-Net++, dan DeepLabV3+ menggunakan backbone ResNet34 yang sama pada dataset SAR.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up" data-delay="200">
+          <div class="card-icon"><i class="fas fa-satellite-dish"></i></div>
+          <h3>Analisis Citra SAR</h3>
+          <p>Pemrosesan citra Synthetic Aperture Radar dari satelit Sentinel-1 untuk deteksi tumpahan minyak di laut.</p>
+        </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE SECTION -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">MODEL ARCHITECTURE</span>
+        <h2>Arsitektur <span class="glow-text">Model Perbandingan</span></h2>
+        <p>Tiga model segmentasi deep learning dibandingkan menggunakan backbone yang sama (ResNet34) untuk mendeteksi tumpahan minyak pada citra SAR.</p>
+      </div>
+
+      <!-- Shared Pipeline -->
+      <div class="arch-pipeline">
+        <div class="arch-step">
+          <div class="arch-icon"><i class="fas fa-image"></i></div>
+          <div class="arch-label">Input SAR Image</div>
+          <div class="arch-sub">512×512 px</div>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step encoder">
+          <div class="arch-icon"><i class="fas fa-network-wired"></i></div>
+          <div class="arch-label">ResNet34 Encoder</div>
+          <div class="arch-sub">Shared Backbone</div>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step bridge">
+          <div class="arch-icon"><i class="fas fa-code-branch"></i></div>
+          <div class="arch-label">Decoder Varies</div>
+          <div class="arch-sub">Per Model</div>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step decoder">
+          <div class="arch-icon"><i class="fas fa-map"></i></div>
+          <div class="arch-label">Segmentation Mask</div>
+          <div class="arch-sub">Binary Output</div>
+        </div>
+      </div>
+
+      <!-- 3 Model Cards -->
+      <div class="model-compare-grid">
+        <div class="model-card">
+          <div class="model-badge" style="background:rgba(0,212,255,0.15);border-color:rgba(0,212,255,0.4);color:#00d4ff">Model 1</div>
+          <h3 class="model-name"><i class="fas fa-layer-group"></i> U-Net</h3>
+          <p class="model-desc">Menggunakan <strong>skip connection</strong> untuk menggabungkan informasi dari encoder dan decoder, sehingga mampu mempertahankan informasi spasial selama proses segmentasi.</p>
+          <div class="model-flow">
+            <span>Encoder</span>
+            <i class="fas fa-long-arrow-alt-right"></i>
+            <span class="flow-key">Skip Connection</span>
+            <i class="fas fa-long-arrow-alt-right"></i>
+            <span>Decoder</span>
+          </div>
+          <div class="model-tags">
+            <span>Skip Connection</span>
+            <span>Symmetric</span>
+            <span>U-shape</span>
+          </div>
+        </div>
+        <div class="model-card featured">
+          <div class="model-badge" style="background:rgba(0,255,136,0.15);border-color:rgba(0,255,136,0.4);color:#00ff88">Model 2</div>
+          <h3 class="model-name"><i class="fas fa-project-diagram"></i> U-Net++</h3>
+          <p class="model-desc">Pengembangan dari U-Net dengan <strong>skip connection yang lebih kompleks</strong>. Arsitektur ini meningkatkan proses penggabungan fitur sehingga menghasilkan segmentasi yang lebih akurat.</p>
+          <div class="model-flow">
+            <span>Encoder</span>
+            <i class="fas fa-long-arrow-alt-right"></i>
+            <span class="flow-key">Dense Skip</span>
+            <i class="fas fa-long-arrow-alt-right"></i>
+            <span>Decoder</span>
+          </div>
+          <div class="model-tags">
+            <span>Dense Skip</span>
+            <span>Nested</span>
+            <span>Re-designed</span>
+          </div>
+        </div>
+        <div class="model-card">
+          <div class="model-badge" style="background:rgba(255,107,53,0.15);border-color:rgba(255,107,53,0.4);color:#ff6b35">Model 3</div>
+          <h3 class="model-name"><i class="fas fa-expand-arrows-alt"></i> DeepLabV3+</h3>
+          <p class="model-desc">Memanfaatkan <strong>Atrous Spatial Pyramid Pooling (ASPP)</strong> untuk mengekstraksi informasi pada berbagai skala, memungkinkan model menangkap konteks spasial yang lebih luas.</p>
+          <div class="model-flow">
+            <span>Encoder</span>
+            <i class="fas fa-long-arrow-alt-right"></i>
+            <span class="flow-key">ASPP</span>
+            <i class="fas fa-long-arrow-alt-right"></i>
+            <span>Decoder</span>
+          </div>
+          <div class="model-tags">
+            <span>ASPP</span>
+            <span>Multi-scale</span>
+            <span>Atrous Conv</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-info-grid">
+        <div class="arch-info-card">
+          <i class="fab fa-python"></i>
+          <h4>Framework</h4>
+          <p>PyTorch 2.0</p>
+        </div>
+        <div class="arch-info-card">
+          <i class="fas fa-microchip"></i>
+          <h4>Training</h4>
+          <p>Google Colab GPU</p>
+        </div>
+        <div class="arch-info-card">
+          <i class="fas fa-sliders-h"></i>
+          <h4>Optimizer</h4>
+          <p>Adam (lr=1e-4)</p>
+        </div>
+        <div class="arch-info-card">
+          <i class="fas fa-calculator"></i>
+          <h4>Loss Function</h4>
+          <p>BCE + Dice Loss</p>
+        </div>
+        <div class="arch-info-card">
+          <i class="fas fa-network-wired"></i>
+          <h4>Backbone</h4>
+          <p>ResNet34 Pretrained</p>
+        </div>
+        <div class="arch-info-card">
+          <i class="fas fa-expand"></i>
+          <h4>Input Size</h4>
+          <p>512 × 512 px</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETECTION SECTION -->
+  <section id="detection">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">DETECTION SYSTEM</span>
+        <h2>Sistem Deteksi <span class="glow-text">Tumpahan Minyak</span></h2>
+        <p>Upload citra SAR dan lihat hasil segmentasi secara langsung.</p>
+      </div>
+
+      <div class="detection-layout">
+        <!-- Upload Area -->
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+          <h3>Upload Citra SAR</h3>
+          <p>Pilih file gambar lalu klik Prediksi</p>
+          <p class="upload-hint">Format: JPG, PNG, TIFF</p>
+          <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:1.5rem;">
+            <label for="imageInput" class="btn-upload">
+              <i class="fas fa-folder-open"></i> Pilih Gambar
+            </label>
+            <button id="predictBtn" class="btn-primary" onclick="predict()" style="display:none;">
+              <i class="fas fa-brain"></i> Prediksi
+            </button>
+          </div>
+          <input type="file" id="imageInput" accept="image/*" style="display:none">
+          <p id="selectedFileName" style="margin-top:0.75rem; font-size:0.8rem; color:var(--cyan); display:none;"></p>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loading" style="display:none; text-align:center; padding:2rem; color:var(--cyan);">
+          <i class="fas fa-spinner fa-spin" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>
+          Sedang memproses...
+        </div>
+
+        <!-- Result Images -->
+        <div class="detection-results" id="detectionResults" style="display:none;">
+          <div class="result-grid-3">
+            <!-- Model 1: U-Net (Coming Soon) -->
+            <div class="result-card">
+              <div class="result-label model-lbl-unet"><i class="fas fa-layer-group"></i> &nbsp;U-Net</div>
+              <div class="result-img-wrap">
+                <img id="unetImage" alt="U-Net Result" />
+                <div class="coming-soon-overlay">
+                  <i class="fas fa-clock"></i>
+                  <p>Coming Soon</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Model 2: U-Net++ (Aktif dari API) -->
+            <div class="result-card featured-model">
+              <div class="result-label model-lbl-unetpp"><i class="fas fa-project-diagram"></i> &nbsp;U-Net++</div>
+              <div class="result-img-wrap">
+                <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
+                <img id="unetppMask" alt="U-Net++ Mask" />
+              </div>
+              <div class="result-img-wrap" style="margin-top:0;">
+                <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
+                <img id="unetppImage" alt="U-Net++ Overlay" />
+              </div>
+              <div class="model-status active">
+                <i class="fas fa-check-circle"></i> Active Model
+              </div>
+            </div>
+
+            <!-- Model 3: DeepLabV3+ (Coming Soon) -->
+            <div class="result-card">
+              <div class="result-label model-lbl-deeplab"><i class="fas fa-expand-arrows-alt"></i> &nbsp;DeepLabV3+</div>
+              <div class="result-img-wrap">
+                <img id="deeplabImage" alt="DeepLabV3+ Result" />
+                <div class="coming-soon-overlay">
+                  <i class="fas fa-clock"></i>
+                  <p>Coming Soon</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div id="resultInfo" style="display:none; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; padding:1.25rem; text-align:center;">
+            <p style="color:var(--gray); font-size:0.85rem;"><i class="fas fa-info-circle"></i> Prediksi selesai. Model U-Net dan DeepLabV3+ sedang dalam pengembangan.</p>
+          </div>
+
+          <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+            <button class="btn-analyze" onclick="predict()">
+              <i class="fas fa-brain"></i> Prediksi Ulang
+            </button>
+            <button class="btn-secondary" onclick="resetDetection()">
+              <i class="fas fa-redo"></i> Upload Gambar Baru
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATASET & PERFORMANCE -->
+  <section id="dataset">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">DATASET & PERFORMANCE</span>
+        <h2>Statistik <span class="glow-text">Dataset & Model</span></h2>
+      </div>
+      <div class="dataset-layout">
+        <div class="dataset-cards">
+          <div class="ds-card">
+            <div class="ds-icon"><i class="fas fa-database"></i></div>
+            <div class="ds-num" data-target="8070">0</div>
+            <div class="ds-lbl">Total Images</div>
+            <div class="ds-sub">SAR Sentinel-1</div>
+          </div>
+          <div class="ds-card">
+            <div class="ds-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="ds-num" data-target="6455">0</div>
+            <div class="ds-lbl">Training Set</div>
+          </div>
+          <div class="ds-card">
+            <div class="ds-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="ds-num" data-target="1615">0</div>
+            <div class="ds-lbl">Validation Set</div>
+          </div>
+        </div>
+        <div class="performance-grid">
+          <!-- <div class="perf-card">
+            <h4><i class="fas fa-bullseye"></i> Perbandingan IoU Score</h4>
+            <div class="perf-row"><span>U-Net</span><div class="perf-bar"><div class="perf-fill cyan" style="width:83.1%"></div></div><span>83.1%</span></div>
+            <div class="perf-row"><span>U-Net++</span><div class="perf-bar"><div class="perf-fill orange" style="width:85.6%"></div></div><span>85.6%</span></div>
+            <div class="perf-row"><span>DeepLabV3+</span><div class="perf-bar"><div class="perf-fill green" style="width:87.2%"></div></div><span>87.2%</span></div>
+          </div> -->
+          <div class="perf-card">
+            <h4><i class="fas fa-table"></i> Tabel Perbandingan Model</h4>
+            <div class="model-table-wrap">
+              <table class="model-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Backbone</th>
+                    <th>IoU</th>
+                    <th>Dice Score</th>
+                    <th>Accuracy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="mt-model cyan">U-Net</span></td>
+                    <td>ResNet34</td>
+                    <td>Coming Soon</td>
+                    <td>Coming Soon</td>
+                    <td>Coming Soon</td>
+                  </tr>
+                  <tr>
+                    <td><span class="mt-model orange">U-Net++</span></td>
+                    <td>ResNet34</td>
+                    <td>0.856</td>
+                    <td>0.903</td>
+                    <td>0.918</td>
+                  </tr>
+                  <tr class="best-row">
+                    <td><span class="mt-model green">DeepLabV3+</span></td>
+                    <td>ResNet34</td>
+                    <td><strong>Coming Soon</strong></td>
+                    <td><strong>Coming Soon</strong></td>
+                    <td><strong>Coming Soon</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY SECTION -->
+  <section id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">GALERI HASIL</span>
+        <h2>Hasil <span class="glow-text">Segmentasi</span></h2>
+        <p>Visualisasi before-after segmentasi tumpahan minyak pada citra SAR laut.</p>
+      </div>
+      <div class="gallery-grid">
+      
+        <!-- <div class="gallery-item" data-label="Tumpahan Berat — Teluk Meksiko">
+          <div class="gallery-before"><div class="mock-sar s1"></div><span class="g-tag">SAR Original</span></div>
+          <div class="gallery-after"><div class="mock-seg s1"></div><span class="g-tag seg">Segmentasi</span></div>
+          <div class="gallery-info"><span class="g-level berat">BERAT</span><span class="g-conf">Conf: 96.3%</span></div>
+        </div>
+        <div class="gallery-item" data-label="Tumpahan Sedang — Laut Jawa">
+          <div class="gallery-before"><div class="mock-sar s2"></div><span class="g-tag">SAR Original</span></div>
+          <div class="gallery-after"><div class="mock-seg s2"></div><span class="g-tag seg">Segmentasi</span></div>
+          <div class="gallery-info"><span class="g-level sedang">SEDANG</span><span class="g-conf">Conf: 91.7%</span></div>
+        </div>
+        <div class="gallery-item" data-label="Tumpahan Ringan — Selat Malaka">
+          <div class="gallery-before"><div class="mock-sar s3"></div><span class="g-tag">SAR Original</span></div>
+          <div class="gallery-after"><div class="mock-seg s3"></div><span class="g-tag seg">Segmentasi</span></div>
+          <div class="gallery-info"><span class="g-level ringan">RINGAN</span><span class="g-conf">Conf: 88.4%</span></div>
+        </div>
+        <div class="gallery-item" data-label="Tumpahan Berat — Laut Timor">
+          <div class="gallery-before"><div class="mock-sar s4"></div><span class="g-tag">SAR Original</span></div>
+          <div class="gallery-after"><div class="mock-seg s4"></div><span class="g-tag seg">Segmentasi</span></div>
+          <div class="gallery-info"><span class="g-level berat">BERAT</span><span class="g-conf">Conf: 94.8%</span></div>
+        </div>
+        <div class="gallery-item" data-label="Tumpahan Sedang — Laut Sulawesi">
+          <div class="gallery-before"><div class="mock-sar s5"></div><span class="g-tag">SAR Original</span></div>
+          <div class="gallery-after"><div class="mock-seg s5"></div><span class="g-tag seg">Segmentasi</span></div>
+          <div class="gallery-info"><span class="g-level sedang">SEDANG</span><span class="g-conf">Conf: 89.2%</span></div>
+        </div>
+        <div class="gallery-item" data-label="Tumpahan Ringan — Laut Banda">
+          <div class="gallery-before"><div class="mock-sar s6"></div><span class="g-tag">SAR Original</span></div>
+          <div class="gallery-after"><div class="mock-seg s6"></div><span class="g-tag seg">Segmentasi</span></div>
+          <div class="gallery-info"><span class="g-level ringan">RINGAN</span><span class="g-conf">Conf: 85.9%</span></div>
+        </div> -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="footer-glow"></div>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo"><i class="fas fa-water"></i> OilSAR<span class="accent">AI</span></div>
+          <p>Sistem deteksi tumpahan minyak berbasis deep learning menggunakan citra SAR satelit untuk monitoring lingkungan laut.</p>
+          <div class="footer-tech">
+            <span><i class="fab fa-python"></i> PyTorch</span>
+            <span><i class="fab fa-google"></i> Colab</span>
+            <span><i class="fas fa-eye"></i> OpenCV</span>
+            <span><i class="fas fa-network-wired"></i> ResNet34</span>
+            <span><i class="fas fa-layer-group"></i> U-Net</span>
+          </div>
+        </div>
+        <div class="footer-info">
+          <h4>Peneliti</h4>
+          <p><i class="fas fa-user"></i>Raja Aizin Nofrizivaldy</p>
+          <p><i class="fas fa-user"></i>Hermawan</p>
+          <p><i class="fas fa-user"></i>Tommy Susanto</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navigasi</h4>
+          <a href="#hero">Home</a>
+          <a href="#about">Penelitian</a>
+          <a href="#architecture">Arsitektur</a>
+          <a href="#detection">Deteksi</a>
+          <a href="#dataset">Dataset</a>
+          <a href="#gallery">Galeri</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 OilSAR AI Research — Analisis Perbandingan Model Segmentasi Deep Learning untuk Deteksi Tumpahan Minyak SAR</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="api-panggil.js"></script>
+</body>
+</html>
