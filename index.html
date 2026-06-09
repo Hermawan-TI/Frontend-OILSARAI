@@ -4,68 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Analisis Perbandingan Model Segmentasi Deep Learning — Deteksi Tumpahan Minyak SAR</title>
-  <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background: #f5f5f5;
-}
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-}
-
-h1 {
-    text-align: center;
-}
-
-.upload-box {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-button {
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-.result {
-    margin-top: 30px;
-}
-
-.image-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,.1);
-}
-
-.card img {
-    width: 100%;
-    border: 1px solid #ddd;
-}
-
-.info {
-    margin-top: 20px;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-}
-
-.loading {
-    display: none;
-    text-align: center;
-    margin-top: 20px;
-    color: blue;
-}
-</style>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -361,18 +299,14 @@ button {
 
         <!-- Result Images -->
         <div class="detection-results" id="detectionResults" style="display:none;">
+
+          <!-- Gambar yang diupload -->
+          <div class="original-preview">
+            <div class="result-label" style="margin-bottom:0.75rem;"><i class="fas fa-image"></i> &nbsp;Gambar Input SAR</div>
+            <img id="originalPreview" alt="Input SAR" />
+          </div>
+
           <div class="result-grid-3">
-<<<<<<< HEAD
-            <!-- Model 1: U-Net -->
-            <div class="result-card">
-              <div class="result-label model-lbl-unet"><i class="fas fa-layer-group"></i> &nbsp;U-Net</div>
-              <!-- Coming Soon (default tampil) -->
-              <div id="unetComingSoon" class="result-img-wrap">
-                <div class="coming-soon-overlay">
-                  <i class="fas fa-clock"></i>
-                  <p>Coming Soon</p>
-                </div>
-=======
 
             <!-- Model 1: U-Net -->
             <div class="result-card">
@@ -384,18 +318,6 @@ button {
               <div class="result-img-wrap">
                 <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
                 <img id="unetImage" alt="U-Net Overlay" />
->>>>>>> 5c78d0f (Update)
-              </div>
-              <!-- Hasil API (tersembunyi sampai ada data) -->
-              <div id="unetResults" style="display:none;">
-                <div class="result-img-wrap">
-                  <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
-                  <img id="unetMask" alt="U-Net Mask" />
-                </div>
-                <div class="result-img-wrap">
-                  <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
-                  <img id="unetImage" alt="U-Net Overlay" />
-                </div>
               </div>
             </div>
 
@@ -415,14 +337,6 @@ button {
             <!-- Model 3: DeepLabV3+ -->
             <div class="result-card">
               <div class="result-label model-lbl-deeplab"><i class="fas fa-expand-arrows-alt"></i> &nbsp;DeepLabV3+</div>
-<<<<<<< HEAD
-              <!-- Coming Soon (default tampil) -->
-              <div id="deeplabComingSoon" class="result-img-wrap">
-                <div class="coming-soon-overlay">
-                  <i class="fas fa-clock"></i>
-                  <p>Coming Soon</p>
-                </div>
-=======
               <div class="result-img-wrap">
                 <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
                 <img id="deeplabMask" alt="DeepLabV3+ Mask" />
@@ -430,18 +344,6 @@ button {
               <div class="result-img-wrap">
                 <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
                 <img id="deeplabImage" alt="DeepLabV3+ Overlay" />
->>>>>>> 5c78d0f (Update)
-              </div>
-              <!-- Hasil API (tersembunyi sampai ada data) -->
-              <div id="deeplabResults" style="display:none;">
-                <div class="result-img-wrap">
-                  <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
-                  <img id="deeplabMask" alt="DeepLabV3+ Mask" />
-                </div>
-                <div class="result-img-wrap">
-                  <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
-                  <img id="deeplabImage" alt="DeepLabV3+ Overlay" />
-                </div>
               </div>
             </div>
 
@@ -540,50 +442,7 @@ button {
     </div>
   </section>
 
-  <!-- GALLERY SECTION -->
-  <section id="gallery">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">GALERI HASIL</span>
-        <h2>Hasil <span class="glow-text">Segmentasi</span></h2>
-        <p>Visualisasi before-after segmentasi tumpahan minyak pada citra SAR laut.</p>
-      </div>
-      <div class="gallery-grid">
-      
-        <!-- <div class="gallery-item" data-label="Tumpahan Berat — Teluk Meksiko">
-          <div class="gallery-before"><div class="mock-sar s1"></div><span class="g-tag">SAR Original</span></div>
-          <div class="gallery-after"><div class="mock-seg s1"></div><span class="g-tag seg">Segmentasi</span></div>
-          <div class="gallery-info"><span class="g-level berat">BERAT</span><span class="g-conf">Conf: 96.3%</span></div>
-        </div>
-        <div class="gallery-item" data-label="Tumpahan Sedang — Laut Jawa">
-          <div class="gallery-before"><div class="mock-sar s2"></div><span class="g-tag">SAR Original</span></div>
-          <div class="gallery-after"><div class="mock-seg s2"></div><span class="g-tag seg">Segmentasi</span></div>
-          <div class="gallery-info"><span class="g-level sedang">SEDANG</span><span class="g-conf">Conf: 91.7%</span></div>
-        </div>
-        <div class="gallery-item" data-label="Tumpahan Ringan — Selat Malaka">
-          <div class="gallery-before"><div class="mock-sar s3"></div><span class="g-tag">SAR Original</span></div>
-          <div class="gallery-after"><div class="mock-seg s3"></div><span class="g-tag seg">Segmentasi</span></div>
-          <div class="gallery-info"><span class="g-level ringan">RINGAN</span><span class="g-conf">Conf: 88.4%</span></div>
-        </div>
-        <div class="gallery-item" data-label="Tumpahan Berat — Laut Timor">
-          <div class="gallery-before"><div class="mock-sar s4"></div><span class="g-tag">SAR Original</span></div>
-          <div class="gallery-after"><div class="mock-seg s4"></div><span class="g-tag seg">Segmentasi</span></div>
-          <div class="gallery-info"><span class="g-level berat">BERAT</span><span class="g-conf">Conf: 94.8%</span></div>
-        </div>
-        <div class="gallery-item" data-label="Tumpahan Sedang — Laut Sulawesi">
-          <div class="gallery-before"><div class="mock-sar s5"></div><span class="g-tag">SAR Original</span></div>
-          <div class="gallery-after"><div class="mock-seg s5"></div><span class="g-tag seg">Segmentasi</span></div>
-          <div class="gallery-info"><span class="g-level sedang">SEDANG</span><span class="g-conf">Conf: 89.2%</span></div>
-        </div>
-        <div class="gallery-item" data-label="Tumpahan Ringan — Laut Banda">
-          <div class="gallery-before"><div class="mock-sar s6"></div><span class="g-tag">SAR Original</span></div>
-          <div class="gallery-after"><div class="mock-seg s6"></div><span class="g-tag seg">Segmentasi</span></div>
-          <div class="gallery-info"><span class="g-level ringan">RINGAN</span><span class="g-conf">Conf: 85.9%</span></div>
-        </div> -->
-      </div>
-    </div>
-  </section>
-
+  
   <!-- FOOTER -->
   <footer id="footer">
     <div class="footer-glow"></div>

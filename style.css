@@ -1026,3 +1026,21 @@ footer {
   padding: 0.4rem 0 0.3rem;
 }
 .img-sublabel i { margin-right: 0.3rem; }
+
+/* ===== Original Image Preview ===== */
+.original-preview {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.original-preview img {
+  max-height: 300px;
+  max-width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
