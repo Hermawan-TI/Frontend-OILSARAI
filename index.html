@@ -362,14 +362,25 @@ button {
         <!-- Result Images -->
         <div class="detection-results" id="detectionResults" style="display:none;">
           <div class="result-grid-3">
-            <!-- Model 1: U-Net (Coming Soon) -->
+            <!-- Model 1: U-Net -->
             <div class="result-card">
               <div class="result-label model-lbl-unet"><i class="fas fa-layer-group"></i> &nbsp;U-Net</div>
-              <div class="result-img-wrap">
-                <img id="unetImage" alt="U-Net Result" />
+              <!-- Coming Soon (default tampil) -->
+              <div id="unetComingSoon" class="result-img-wrap">
                 <div class="coming-soon-overlay">
                   <i class="fas fa-clock"></i>
                   <p>Coming Soon</p>
+                </div>
+              </div>
+              <!-- Hasil API (tersembunyi sampai ada data) -->
+              <div id="unetResults" style="display:none;">
+                <div class="result-img-wrap">
+                  <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
+                  <img id="unetMask" alt="U-Net Mask" />
+                </div>
+                <div class="result-img-wrap">
+                  <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
+                  <img id="unetImage" alt="U-Net Overlay" />
                 </div>
               </div>
             </div>
@@ -390,14 +401,25 @@ button {
               </div>
             </div>
 
-            <!-- Model 3: DeepLabV3+ (Coming Soon) -->
+            <!-- Model 3: DeepLabV3+ -->
             <div class="result-card">
               <div class="result-label model-lbl-deeplab"><i class="fas fa-expand-arrows-alt"></i> &nbsp;DeepLabV3+</div>
-              <div class="result-img-wrap">
-                <img id="deeplabImage" alt="DeepLabV3+ Result" />
+              <!-- Coming Soon (default tampil) -->
+              <div id="deeplabComingSoon" class="result-img-wrap">
                 <div class="coming-soon-overlay">
                   <i class="fas fa-clock"></i>
                   <p>Coming Soon</p>
+                </div>
+              </div>
+              <!-- Hasil API (tersembunyi sampai ada data) -->
+              <div id="deeplabResults" style="display:none;">
+                <div class="result-img-wrap">
+                  <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
+                  <img id="deeplabMask" alt="DeepLabV3+ Mask" />
+                </div>
+                <div class="result-img-wrap">
+                  <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
+                  <img id="deeplabImage" alt="DeepLabV3+ Overlay" />
                 </div>
               </div>
             </div>
@@ -478,9 +500,9 @@ button {
                   <tr>
                     <td><span class="mt-model orange">U-Net++</span></td>
                     <td>ResNet34</td>
-                    <td>Coming Soon</td>
-                    <td>Coming Soon</td>
-                    <td>Coming Soon</td>
+                    <td>0.856</td>
+                    <td>0.903</td>
+                    <td>0.918</td>
                   </tr>
                   <tr class="best-row">
                     <td><span class="mt-model green">DeepLabV3+</span></td>
