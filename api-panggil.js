@@ -1,3 +1,10 @@
+// ===== KONFIGURASI URL API =====
+const API_URLS = {
+    unet:    "https://apiunet-production.up.railway.app/predict",
+    unetpp:  "https://segmentation-api-test-citrachan-production.up.railway.app/predict",
+    deeplab: "https://backend-deeplapv3-production.up.railway.app/predict"
+};
+
 // Tampilkan nama file dan tombol prediksi saat file dipilih
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("imageInput");
@@ -7,17 +14,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (input) {
         input.addEventListener("change", function () {
             if (input.files.length) {
-                // Tampilkan nama file
                 if (nameEl) {
                     nameEl.textContent = "File: " + input.files[0].name;
                     nameEl.style.display = "block";
                 }
-                // Tampilkan tombol prediksi
-                if (predictBtn) {
-                    predictBtn.style.display = "flex";
-                }
+                if (predictBtn) predictBtn.style.display = "flex";
             } else {
-                // Sembunyikan jika tidak ada file
                 if (nameEl) nameEl.style.display = "none";
                 if (predictBtn) predictBtn.style.display = "none";
             }
@@ -36,66 +38,62 @@ async function predict() {
 
     const file = fileInput.files[0];
 
-    // Tampilkan loading
     document.getElementById("loading").style.display = "block";
     document.getElementById("uploadArea").style.display = "none";
     document.getElementById("detectionResults").style.display = "none";
 
-    const formData = new FormData();
-    formData.append("file", file);
+    // Kirim ke 3 API secara paralel
+    const makeFormData = () => { const fd = new FormData(); fd.append("file", file); return fd; };
 
-    try {
+    const [resUnet, resUnetpp, resDeeplab] = await Promise.allSettled([
+        fetch(API_URLS.unet,    { method: "POST", body: makeFormData() }),
+        fetch(API_URLS.unetpp,  { method: "POST", body: makeFormData() }),
+        fetch(API_URLS.deeplab, { method: "POST", body: makeFormData() }),
+    ]);
 
-        const response = await fetch(
-            "https://segmentation-api-test-citrachan-production.up.railway.app/predict",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Server error: " + response.status);
+    // Parse response jika berhasil
+    const parse = async (result) => {
+        if (result.status === "fulfilled" && result.value.ok) {
+            return await result.value.json();
         }
+        return null;
+    };
 
-        const data = await response.json();
-        console.log(data);
+    const [dataUnet, dataUnetpp, dataDeeplab] = await Promise.all([
+        parse(resUnet),
+        parse(resUnetpp),
+        parse(resDeeplab),
+    ]);
 
-        /*
-        Response:
-        {
-            "percentage": 20.4,
-            "level": "Sedang",
-            "mask": "iVBORw0KGgoAAA...",    <- base64
-            "overlay": "iVBORw0KGgoAAA..."  <- base64
-        }
-        */
+    console.log("U-Net:", dataUnet);
+    console.log("U-Net++:", dataUnetpp);
+    console.log("DeepLabV3+:", dataDeeplab);
 
-        // Model 1: U-Net → Coming Soon
-        document.getElementById("unetImage").src = "";
-
-        // Model 2: U-Net++ → Tampilkan mask dan overlay dari API
-        document.getElementById("unetppMask").src  = "data:image/png;base64," + data.mask;
-        document.getElementById("unetppImage").src = "data:image/png;base64," + data.overlay;
-
-        // Model 3: DeepLabV3+ → Coming Soon
-        document.getElementById("deeplabImage").src = "";
-
-        // Tampilkan hasil
-        document.getElementById("detectionResults").style.display = "flex";
-        document.getElementById("resultInfo").style.display = "block";
-
-    } catch (error) {
-
-        console.error(error);
-        alert("Gagal menghubungi API: " + error.message);
-        resetDetection();
-
-    } finally {
-
-        document.getElementById("loading").style.display = "none";
-
+    // U-Net
+    if (dataUnet) {
+        document.getElementById("unetMask").src  = "data:image/png;base64," + dataUnet.mask;
+        document.getElementById("unetImage").src = "data:image/png;base64," + dataUnet.overlay;
+        document.getElementById("unetComingSoon").style.display  = "none";
+        document.getElementById("unetResults").style.display     = "block";
     }
+
+    // U-Net++
+    if (dataUnetpp) {
+        document.getElementById("unetppMask").src  = "data:image/png;base64," + dataUnetpp.mask;
+        document.getElementById("unetppImage").src = "data:image/png;base64," + dataUnetpp.overlay;
+    }
+
+    // DeepLabV3+
+    if (dataDeeplab) {
+        document.getElementById("deeplabMask").src  = "data:image/png;base64," + dataDeeplab.mask;
+        document.getElementById("deeplabImage").src = "data:image/png;base64," + dataDeeplab.overlay;
+        document.getElementById("deeplabComingSoon").style.display = "none";
+        document.getElementById("deeplabResults").style.display    = "block";
+    }
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("detectionResults").style.display = "flex";
+    document.getElementById("resultInfo").style.display = "block";
 }
 
 function resetDetection() {
@@ -108,10 +106,16 @@ function resetDetection() {
     const predictBtn = document.getElementById("predictBtn");
     if (predictBtn) predictBtn.style.display = "none";
 
-    document.getElementById("unetImage").src = "";
-    document.getElementById("unetppMask").src = "";
-    document.getElementById("unetppImage").src = "";
-    document.getElementById("deeplabImage").src = "";
+    // Reset semua gambar
+    ["unetMask","unetImage","unetppMask","unetppImage","deeplabMask","deeplabImage"]
+        .forEach(id => { const el = document.getElementById(id); if (el) el.src = ""; });
+
+    // Kembalikan coming soon jika ada
+    document.getElementById("unetComingSoon").style.display  = "flex";
+    document.getElementById("unetResults").style.display     = "none";
+    document.getElementById("deeplabComingSoon").style.display = "flex";
+    document.getElementById("deeplabResults").style.display    = "none";
+
     document.getElementById("resultInfo").style.display = "none";
     document.getElementById("detectionResults").style.display = "none";
     document.getElementById("uploadArea").style.display = "block";
