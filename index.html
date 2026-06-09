@@ -362,6 +362,7 @@ button {
         <!-- Result Images -->
         <div class="detection-results" id="detectionResults" style="display:none;">
           <div class="result-grid-3">
+<<<<<<< HEAD
             <!-- Model 1: U-Net -->
             <div class="result-card">
               <div class="result-label model-lbl-unet"><i class="fas fa-layer-group"></i> &nbsp;U-Net</div>
@@ -371,6 +372,19 @@ button {
                   <i class="fas fa-clock"></i>
                   <p>Coming Soon</p>
                 </div>
+=======
+
+            <!-- Model 1: U-Net -->
+            <div class="result-card">
+              <div class="result-label model-lbl-unet"><i class="fas fa-layer-group"></i> &nbsp;U-Net</div>
+              <div class="result-img-wrap">
+                <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
+                <img id="unetMask" alt="U-Net Mask" />
+              </div>
+              <div class="result-img-wrap">
+                <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
+                <img id="unetImage" alt="U-Net Overlay" />
+>>>>>>> 5c78d0f (Update)
               </div>
               <!-- Hasil API (tersembunyi sampai ada data) -->
               <div id="unetResults" style="display:none;">
@@ -385,31 +399,38 @@ button {
               </div>
             </div>
 
-            <!-- Model 2: U-Net++ (Aktif dari API) -->
+            <!-- Model 2: U-Net++ -->
             <div class="result-card featured-model">
               <div class="result-label model-lbl-unetpp"><i class="fas fa-project-diagram"></i> &nbsp;U-Net++</div>
               <div class="result-img-wrap">
                 <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
                 <img id="unetppMask" alt="U-Net++ Mask" />
               </div>
-              <div class="result-img-wrap" style="margin-top:0;">
+              <div class="result-img-wrap">
                 <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
                 <img id="unetppImage" alt="U-Net++ Overlay" />
-              </div>
-              <div class="model-status active">
-                <i class="fas fa-check-circle"></i> Active Model
               </div>
             </div>
 
             <!-- Model 3: DeepLabV3+ -->
             <div class="result-card">
               <div class="result-label model-lbl-deeplab"><i class="fas fa-expand-arrows-alt"></i> &nbsp;DeepLabV3+</div>
+<<<<<<< HEAD
               <!-- Coming Soon (default tampil) -->
               <div id="deeplabComingSoon" class="result-img-wrap">
                 <div class="coming-soon-overlay">
                   <i class="fas fa-clock"></i>
                   <p>Coming Soon</p>
                 </div>
+=======
+              <div class="result-img-wrap">
+                <div class="img-sublabel"><i class="fas fa-layer-group"></i> Mask</div>
+                <img id="deeplabMask" alt="DeepLabV3+ Mask" />
+              </div>
+              <div class="result-img-wrap">
+                <div class="img-sublabel" style="color:var(--green);"><i class="fas fa-eye"></i> Overlay</div>
+                <img id="deeplabImage" alt="DeepLabV3+ Overlay" />
+>>>>>>> 5c78d0f (Update)
               </div>
               <!-- Hasil API (tersembunyi sampai ada data) -->
               <div id="deeplabResults" style="display:none;">
@@ -423,11 +444,12 @@ button {
                 </div>
               </div>
             </div>
+
           </div>
 
           <!-- Info -->
-          <div id="resultInfo" style="display:none; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; padding:1.25rem; text-align:center;">
-            <p style="color:var(--gray); font-size:0.85rem;"><i class="fas fa-info-circle"></i> Prediksi selesai. Model U-Net dan DeepLabV3+ sedang dalam pengembangan.</p>
+          <div id="resultInfo" style="display:none; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; padding:1rem; text-align:center;">
+            <p style="color:var(--gray); font-size:0.85rem;"><i class="fas fa-check-circle" style="color:var(--green);"></i> &nbsp;Prediksi selesai dari 3 model.</p>
           </div>
 
           <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
@@ -469,13 +491,7 @@ button {
             <div class="ds-lbl">Validation Set</div>
           </div>
         </div>
-        <div class="performance-grid">
-          <!-- <div class="perf-card">
-            <h4><i class="fas fa-bullseye"></i> Perbandingan IoU Score</h4>
-            <div class="perf-row"><span>U-Net</span><div class="perf-bar"><div class="perf-fill cyan" style="width:83.1%"></div></div><span>83.1%</span></div>
-            <div class="perf-row"><span>U-Net++</span><div class="perf-bar"><div class="perf-fill orange" style="width:85.6%"></div></div><span>85.6%</span></div>
-            <div class="perf-row"><span>DeepLabV3+</span><div class="perf-bar"><div class="perf-fill green" style="width:87.2%"></div></div><span>87.2%</span></div>
-          </div> -->
+        <div class="performance-grid" style="grid-template-columns:1fr;">
           <div class="perf-card">
             <h4><i class="fas fa-table"></i> Tabel Perbandingan Model</h4>
             <div class="model-table-wrap">
@@ -483,33 +499,37 @@ button {
                 <thead>
                   <tr>
                     <th>Model</th>
-                    <th>Backbone</th>
                     <th>IoU</th>
-                    <th>Dice Score</th>
-                    <th>Accuracy</th>
+                    <th>Dice</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>F1-Score</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td><span class="mt-model cyan">U-Net</span></td>
-                    <td>ResNet34</td>
-                    <td>Coming Soon</td>
-                    <td>Coming Soon</td>
-                    <td>Coming Soon</td>
+                    <td>80.91%</td>
+                    <td>89.45%</td>
+                    <td>87.26%</td>
+                    <td>91.75%</td>
+                    <td>89.45%</td>
                   </tr>
                   <tr>
                     <td><span class="mt-model orange">U-Net++</span></td>
-                    <td>ResNet34</td>
-                    <td>0.856</td>
-                    <td>0.903</td>
-                    <td>0.918</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>—</td>
                   </tr>
-                  <tr class="best-row">
+                  <tr>
                     <td><span class="mt-model green">DeepLabV3+</span></td>
-                    <td>ResNet34</td>
-                    <td><strong>Coming Soon</strong></td>
-                    <td><strong>Coming Soon</strong></td>
-                    <td><strong>Coming Soon</strong></td>
+                    <td>80.56%</td>
+                    <td>89.23%</td>
+                    <td>88.11%</td>
+                    <td>90.38%</td>
+                    <td>89.23%</td>
                   </tr>
                 </tbody>
               </table>

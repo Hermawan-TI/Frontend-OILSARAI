@@ -73,8 +73,11 @@ async function predict() {
     if (dataUnet) {
         document.getElementById("unetMask").src  = "data:image/png;base64," + dataUnet.mask;
         document.getElementById("unetImage").src = "data:image/png;base64," + dataUnet.overlay;
+<<<<<<< HEAD
         document.getElementById("unetComingSoon").style.display  = "none";
         document.getElementById("unetResults").style.display     = "block";
+=======
+>>>>>>> 5c78d0f (Update)
     }
 
     // U-Net++
@@ -87,8 +90,11 @@ async function predict() {
     if (dataDeeplab) {
         document.getElementById("deeplabMask").src  = "data:image/png;base64," + dataDeeplab.mask;
         document.getElementById("deeplabImage").src = "data:image/png;base64," + dataDeeplab.overlay;
+<<<<<<< HEAD
         document.getElementById("deeplabComingSoon").style.display = "none";
         document.getElementById("deeplabResults").style.display    = "block";
+=======
+>>>>>>> 5c78d0f (Update)
     }
 
     document.getElementById("loading").style.display = "none";
@@ -110,12 +116,15 @@ function resetDetection() {
     ["unetMask","unetImage","unetppMask","unetppImage","deeplabMask","deeplabImage"]
         .forEach(id => { const el = document.getElementById(id); if (el) el.src = ""; });
 
+<<<<<<< HEAD
     // Kembalikan coming soon jika ada
     document.getElementById("unetComingSoon").style.display  = "flex";
     document.getElementById("unetResults").style.display     = "none";
     document.getElementById("deeplabComingSoon").style.display = "flex";
     document.getElementById("deeplabResults").style.display    = "none";
 
+=======
+>>>>>>> 5c78d0f (Update)
     document.getElementById("resultInfo").style.display = "none";
     document.getElementById("detectionResults").style.display = "none";
     document.getElementById("uploadArea").style.display = "block";
